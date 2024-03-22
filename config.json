@@ -1,0 +1,5 @@
+{
+    "password": {
+        "salt_rounds": 10
+    }
+}
