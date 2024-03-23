@@ -1,22 +1,66 @@
 import Joi from "joi";
-import { validate } from "../utils/utils";
-import { error } from "../utils/api";
 import express from "express";
+import { v4 as uuidv4 } from "uuid"
+
+import { prisma } from "../utils/db";
+import { hashPassword } from "../utils/password";
+import { now, validate } from "../utils/utils";
+import { error, success } from "../utils/api";
 
 const SCHEMA = Joi.object({
     name: Joi.string().required(),
     email: Joi.string().email().required(),
     username: Joi.string().required(),
-    password: Joi.string().required()
+    password: Joi.string().required().regex(new RegExp("(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}"))
 })
 
-export default (req: express.Request, res: express.Response) => {
-    const data = validate(SCHEMA, req.body || {})
+export default async (req: express.Request, res: express.Response) => {
+    const valid = validate(SCHEMA, req.body || {})
 
-    if (data.error) {
-        console.log(data.data)
-        return error(res, data.data)
+    if (valid.error) {
+        return error(res, 401, valid.data)
     }
 
+    const data = valid.data
 
+    const emailExists = await prisma.users.findMany({
+        where: {
+            email: data.email
+        }
+    })
+
+    console.log(emailExists)
+
+    if (emailExists.length > 0) {
+        error(res, 409, "Email already exists.")
+    }
+
+    const usernameExists = await prisma.users.findMany({
+        where: {
+            username: data.username
+        }
+    })
+
+    if (usernameExists.length > 0) {
+        error(res, 409, "Username already exists.")
+    }
+
+    // hash the password
+    const hashData = await hashPassword(data.password)
+
+    await prisma.users.create({
+        data: {
+            id: uuidv4(),
+            username: data.username,
+            name: data.name,
+            email: data.email,
+            password_hash: hashData[1],
+            salt: hashData[0],
+            perm_flag: 1,
+            created_at: now(),
+            updated_at: now()
+        }
+    })
+
+    return success(res, undefined, 201, "Successfully created account.")
 }

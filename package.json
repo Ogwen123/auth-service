@@ -8,12 +8,17 @@
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.2",
     "prisma": "^5.11.0",
+    "statuses": "^2.0.1",
     "uuid": "^9.0.1"
   },
   "scripts": {
     "dev": "bun --watch src/index.ts"
   },
   "devDependencies": {
-    "@types/express": "^4.17.21"
+    "@types/debug": "^4.1.12",
+    "@types/express": "^4.17.21",
+    "@types/statuses": "^2.0.4",
+    "bun-types": "latest",
+    "debug": "^4.3.4"
   }
 }

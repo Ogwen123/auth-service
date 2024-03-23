@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid"
 import bodyParser from "body-parser"
 
 import { prisma } from "./utils/db"
-import { hash_password } from "./utils/password"
+import { hashPassword } from "./utils/password"
 import { now } from "./utils/utils"
 
 import register from "./routes/register"
@@ -24,15 +24,15 @@ app.get('/', (req, res) => {
 })
 
 app.get("/api/test", async (req, res) => {
-    const hash_data = await hash_password("Password100")
+    const hashData = await hashPassword("Password100")
     await prisma.users.create({
         data: {
             id: uuidv4(),
             username: "admin",
             name: "Owen Jones",
             email: "owen.d.jones@btinternet.com",
-            password_hash: hash_data[1],
-            salt: hash_data[0],
+            password_hash: hashData[1],
+            salt: hashData[0],
             perm_flag: 1,
             created_at: now(),
             updated_at: now()
