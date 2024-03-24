@@ -48,9 +48,21 @@ export default async (req: express.Request, res: express.Response) => {
     // hash the password
     const hashData = await hashPassword(data.password)
 
+    // get a unique id
+    let id = ""
+    let unique = false
+    while (!unique) {
+        id = uuidv4()
+        unique = (await prisma.users.findMany({
+            where: {
+                id
+            }
+        })).length > 0
+    }
+
     await prisma.users.create({
         data: {
-            id: uuidv4(),
+            id,
             username: data.username,
             name: data.name,
             email: data.email,
