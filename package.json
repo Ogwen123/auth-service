@@ -13,8 +13,7 @@
     "uuid": "^9.0.1"
   },
   "scripts": {
-    "dev": "bun --watch src/index.ts",
-    "prod": "sudo bunx prisma generate && sudo bun run index.ts"
+    "dev": "bun --watch src/index.ts"
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",
