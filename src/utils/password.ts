@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt"
-import config from "../../config.json"
+import config from "../config.json"
 import logger from "./logger"
 
 export const hashPassword = async (password): Promise<string> => {
