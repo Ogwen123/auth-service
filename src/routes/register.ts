@@ -18,7 +18,8 @@ export default async (req: express.Request, res: express.Response) => {
     const valid = validate(SCHEMA, req.body || {})
 
     if (valid.error) {
-        return error(res, 401, valid.data)
+        error(res, 401, valid.data)
+        return
     }
 
     const data = valid.data
@@ -33,6 +34,7 @@ export default async (req: express.Request, res: express.Response) => {
 
     if (emailExists.length > 0) {
         error(res, 409, "Email already exists.")
+        return
     }
 
     const usernameExists = await prisma.users.findMany({
@@ -43,6 +45,7 @@ export default async (req: express.Request, res: express.Response) => {
 
     if (usernameExists.length > 0) {
         error(res, 409, "Username already exists.")
+        return
     }
 
     // hash the password
@@ -67,12 +70,11 @@ export default async (req: express.Request, res: express.Response) => {
             name: data.name,
             email: data.email,
             password_hash: hashData[1],
-            salt: hashData[0],
             perm_flag: 1,
             created_at: now(),
             updated_at: now()
         }
     })
 
-    return success(res, undefined, 201, "Successfully created account.")
+    return success(res, undefined, "Successfully created account.", 201)
 }

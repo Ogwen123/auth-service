@@ -13,8 +13,12 @@ model users {
     name          String @db.VarChar(255)
     email         String @db.VarChar(255)
     password_hash String @db.VarChar(255)
-    salt          String @db.VarChar(255)
     perm_flag     Int    @default(value: 1)
     created_at    Int
     updated_at    Int
+}
+
+model blacklisted_tokens {
+    token            String @id @db.VarChar(255)
+    logout_timestamp Int
 }

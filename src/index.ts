@@ -8,6 +8,9 @@ import { hashPassword } from "./utils/password"
 import { now } from "./utils/utils"
 
 import register from "./routes/register"
+import login from "./routes/login"
+import logout from "./routes/logout"
+import verifyToken from "./routes/verifyToken"
 
 dotenv.config()
 
@@ -23,29 +26,20 @@ app.get('/', (req, res) => {
     })
 })
 
-app.get("/api/test", async (req, res) => {
-    const hashData = await hashPassword("Password100")
-    await prisma.users.create({
-        data: {
-            id: uuidv4(),
-            username: "admin",
-            name: "Owen Jones",
-            email: "owen.d.jones@btinternet.com",
-            password_hash: hashData[1],
-            salt: hashData[0],
-            perm_flag: 1,
-            created_at: now(),
-            updated_at: now()
-        }
-    })
-
-    res.send({
-        "message": "success"
-    })
-})
-
 app.post("/api/register", (req, res) => {
     register(req, res)
+})
+
+app.post("/api/login", (req, res) => {
+    login(req, res)
+})
+
+app.post("/api/logout", (req, res) => {
+    logout(req, res)
+})
+
+app.get("/api/verify-token", (req, res) => {
+    verifyToken(req, res)
 })
 
 app.listen(port, () => {

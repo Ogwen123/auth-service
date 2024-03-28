@@ -44,7 +44,7 @@ export const status = {
     '505': 'HTTP Version Not Supported',
 };
 
-export const success = (res: express.Response, data?: any, code?: number, message?: string) => {
+export const success = (res: express.Response, data?: any, message?: string, code?: number) => {
     res.statusCode = (code ? code : message ? 200 : 204)
 
     res.send({
