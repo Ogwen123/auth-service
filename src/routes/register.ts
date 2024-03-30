@@ -18,19 +18,24 @@ export default async (req: express.Request, res: express.Response) => {
     const valid = validate(SCHEMA, req.body || {})
 
     if (valid.error) {
-        error(res, 401, valid.data)
+        error(res, 400, valid.data)
         return
     }
 
     const data = valid.data
-
     const emailExists = await prisma.users.findMany({
         where: {
             email: data.email
         }
     })
 
-    console.log(emailExists)
+    const validUsernameFormat = validate(Joi.object({ username: Joi.string().required().email() }), { username: data.username }).error
+
+
+    if (!validUsernameFormat) {
+        error(res, 400, "Your username cannot be in the form of an email.")
+        return
+    }
 
     if (emailExists.length > 0) {
         error(res, 409, "Email already exists.")
@@ -51,7 +56,7 @@ export default async (req: express.Request, res: express.Response) => {
     // hash the password
     const hashData = await hashPassword(data.password)
 
-    // get a unique id
+    // get a unique id - even though chance of getting a duplicate id is practically 0
     let id = ""
     let unique = false
     while (!unique) {
@@ -60,8 +65,9 @@ export default async (req: express.Request, res: express.Response) => {
             where: {
                 id
             }
-        })).length > 0
+        })).length === 0
     }
+
 
     await prisma.users.create({
         data: {
@@ -69,7 +75,7 @@ export default async (req: express.Request, res: express.Response) => {
             username: data.username,
             name: data.name,
             email: data.email,
-            password_hash: hashData[1],
+            password_hash: hashData,
             perm_flag: 1,
             created_at: now(),
             updated_at: now()

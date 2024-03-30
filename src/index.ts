@@ -12,6 +12,9 @@ import login from "./routes/login"
 import logout from "./routes/logout"
 import verifyToken from "./routes/verifyToken"
 
+//@ts-ignore
+BigInt.prototype.toJSON = function () { return this.toString() }
+
 dotenv.config()
 
 const app = express()
@@ -19,6 +22,14 @@ const port = 3000
 
 //app.use(express.json())
 app.use(bodyParser.json())
+
+app.use('/*', function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Content-Type");
+    res.header("Access-Control-Allow-Methods", "GET,HEAD,POST,PATCH,DELETE,OPTIONS")
+    res.header("Access-Control-Max-Age", "86400")
+    next();
+});
 
 app.get('/', (req, res) => {
     res.send({
@@ -43,5 +54,5 @@ app.get("/api/verify-token", (req, res) => {
 })
 
 app.listen(port, () => {
-    console.log(`Listening on http://localhost:${port}`)
+    console.log(`auth service loaded, ${port}`)
 })

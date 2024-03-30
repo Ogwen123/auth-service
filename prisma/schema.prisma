@@ -9,14 +9,14 @@ generator client {
 }
 
 model users {
-    id            String @id @db.VarChar(255)
-    username      String @db.VarChar(255)
-    name          String @db.VarChar(255)
-    email         String @db.VarChar(255)
-    password_hash String @db.VarChar(255)
-    perm_flag     Int    @default(value: 1)
-    created_at    Int
-    updated_at    Int
+    id            String @id(map: "users_pk") @db.VarChar
+    username      String @db.VarChar
+    name          String @db.VarChar
+    email         String @db.VarChar
+    password_hash String @db.VarChar
+    perm_flag     Int
+    created_at    BigInt
+    updated_at    BigInt
 }
 
 model blacklisted_tokens {

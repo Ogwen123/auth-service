@@ -59,6 +59,7 @@ export default async (req: express.Request, res: express.Response) => {
     success(
         res,
         {
+            id: validToken.id,
             perms: userPerms
         },
         "Successfully validated token."

@@ -1,8 +1,9 @@
+import { Perm } from "../global/types"
+
 export const permissions = {
     1: "ACTIVE",
     2: "ADMIN"
 }
-export type Perm = "ACTIVE" | "ADMIN"
 
 export const flagBFToPerms = (bf: number) => {
     let perms: Perm[] = []

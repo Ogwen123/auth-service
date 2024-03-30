@@ -15,7 +15,7 @@ export default async (req: express.Request, res: express.Response) => {
     const valid = validate(SCHEMA, req.body || {})
 
     if (valid.error) {
-        error(res, 401, valid.data)
+        error(res, 400, valid.data)
         return
     }
 
