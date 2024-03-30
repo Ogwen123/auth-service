@@ -1,0 +1,43 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 470B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/oven/bun:latest
+#2 DONE 0.3s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/6] FROM docker.io/oven/bun:latest@sha256:c105c5584a3c38946689d9df4f7cf76bc0e65e4bea0ab39b885750fab4080915
+#4 CACHED
+
+#5 [internal] load build context
+#5 transferring context: 28.78MB 0.2s done
+#5 DONE 0.2s
+
+#6 [2/6] COPY ./node_modules ./node_modules
+#6 DONE 1.4s
+
+#7 [3/6] COPY ./src ./src
+#7 DONE 0.0s
+
+#8 [4/6] COPY ./package.json .
+#8 DONE 0.0s
+
+#9 [5/6] COPY ./prisma ./prisma
+#9 DONE 0.0s
+
+#10 [6/6] RUN bunx prisma generate --schema ./prisma/schema.prisma
+#10 1.812 Prisma schema loaded from prisma/schema.prisma
+#10 DONE 2.1s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 0.4s done
+#11 writing image sha256:31409e0c84198c89f1b20c8c73967a03b09c3bd272a63ce8a3f88d91d795c08c done
+#11 naming to ghcr.io/ogwen123/auth-service done
+#11 DONE 0.4s
+WARNING: current commit information was not captured by the build: failed to read current commit information with git rev-parse --is-inside-work-tree
