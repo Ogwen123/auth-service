@@ -11,7 +11,7 @@ const SCHEMA = Joi.object({
     name: Joi.string().required(),
     email: Joi.string().email().required(),
     username: Joi.string().required(),
-    password: Joi.string().required().regex(new RegExp("/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}/g"))
+    password: Joi.string().required().regex(RegExp(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}/))
 })
 
 export default async (req: express.Request, res: express.Response) => {

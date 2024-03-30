@@ -28,12 +28,20 @@ export default async (req: express.Request, res: express.Response) => {
         return
     }
 
-    await prisma.blacklisted_tokens.create({
-        data: {
-            token: data.token,
-            logout_timestamp: now()
+    const findRes = await prisma.blacklisted_tokens.findMany({
+        where: {
+            token: data.token
         }
     })
+
+    if (findRes.length === 0) {
+        await prisma.blacklisted_tokens.create({
+            data: {
+                token: data.token,
+                logout_timestamp: now()
+            }
+        })
+    }
 
     success(
         res,
