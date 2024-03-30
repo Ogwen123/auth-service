@@ -11,13 +11,21 @@ const SCHEMA = Joi.object({
     name: Joi.string().required(),
     email: Joi.string().email().required(),
     username: Joi.string().required(),
-    password: Joi.string().required().regex(new RegExp("(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}"))
+    password: Joi.string().required().regex(new RegExp("/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}/g"))
 })
 
 export default async (req: express.Request, res: express.Response) => {
     const valid = validate(SCHEMA, req.body || {})
 
     if (valid.error) {
+        valid.data = valid.data.map((error) => {
+            if (error.startswith('"password"')) {
+                return "Password must have a uppercase, lowercase and a number."
+            } else {
+                return error
+            }
+        })
+
         error(res, 400, valid.data)
         return
     }
