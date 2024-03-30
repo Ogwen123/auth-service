@@ -19,7 +19,7 @@ export default async (req: express.Request, res: express.Response) => {
 
     if (valid.error) {
         valid.data = valid.data.map((error) => {
-            if (error.startswith('"password"')) {
+            if (error.startsWith('"password"')) {
                 return "Password must have a uppercase, lowercase and a number."
             } else {
                 return error
