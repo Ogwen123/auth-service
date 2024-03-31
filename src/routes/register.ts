@@ -77,8 +77,8 @@ export default async (req: express.Request, res: express.Response) => {
             email: data.email,
             password_hash: hashData,
             perm_flag: 1,
-            created_at: now(),
-            updated_at: now()
+            created_at: BigInt(now()),
+            updated_at: BigInt(now())
         }
     })
 
