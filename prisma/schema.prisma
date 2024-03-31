@@ -1,25 +1,46 @@
+generator client {
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "linux-arm64-openssl-1.1.x"]
+}
+
 datasource db {
     provider = "postgresql"
     url      = env("POSTGRES_URL")
 }
 
-generator client {
-    provider      = "prisma-client-js"
-    binaryTargets = ["native", "linux-arm64-openssl-1.1.x"] // remove when generating on windows
-}
-
 model users {
-    id            String @id(map: "users_pk") @db.VarChar
-    username      String @db.VarChar
-    name          String @db.VarChar
-    email         String @db.VarChar
-    password_hash String @db.VarChar
-    perm_flag     Int
-    created_at    BigInt
-    updated_at    BigInt
+    id            String   @id(map: "users_pk") @db.VarChar
+    username      String?  @db.VarChar
+    name          String?  @db.VarChar
+    email         String?  @db.VarChar
+    password_hash String?  @db.VarChar
+    perm_flag     Int?
+    created_at    BigInt?
+    updated_at    BigInt?
+    tables        tables[]
 }
 
 model blacklisted_tokens {
-    token            String @id @db.VarChar(255)
-    logout_timestamp Int
+    token            String  @id(map: "blacklisted_tokens_pk") @db.VarChar
+    logout_timestamp BigInt?
+}
+
+model table_contents {
+    id       String  @id(map: "table_contents_pk") @db.VarChar
+    table_id String? @db.VarChar
+    location String? @db.VarChar
+    content  String? @db.VarChar
+    tables   tables? @relation(fields: [table_id], references: [id], onDelete: Cascade, map: "table_contents_tables_columns_fk")
+}
+
+model tables {
+    id             String           @id(map: "id") @db.VarChar
+    user_id        String?          @db.VarChar
+    name           String?          @db.VarChar
+    type           String?          @db.VarChar
+    rows           Int?
+    columns        Int?
+    created_at     BigInt?
+    table_contents table_contents[]
+    users          users?           @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "tables_users_username_fk")
 }
