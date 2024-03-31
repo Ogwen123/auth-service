@@ -13,6 +13,10 @@ export default async (req: express.Request, res: express.Response) => {
 
     const token = req.get("Authorization")?.split(" ")[1]
 
+    console.log(req.get("Authorization"))
+    console.log(req.get("Authorization")?.split(" "))
+    console.log(req.get("Authorization")?.split(" ")[1])
+
     if (token === undefined) {
         error(res, 401, "Invalid token")
         return
