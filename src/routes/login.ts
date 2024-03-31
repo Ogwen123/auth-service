@@ -4,14 +4,14 @@ import jwt from "jsonwebtoken"
 
 import { prisma } from "../utils/db";
 import { checkPassword, hashPassword } from "../utils/password";
-import { now, validate } from "../utils/utils";
+import { filterErrors, now, validate } from "../utils/utils";
 import { error, success } from "../utils/api";
 import { flagBFToPerms } from "../utils/flags";
 import { LoginResponse } from "../global/types";
 
 const SCHEMA = Joi.object({
     identifier: Joi.string().required(),
-    password: Joi.string().required().regex(new RegExp("(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}")),
+    password: Joi.string().required().regex(new RegExp(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}/g)),
     sendData: Joi.boolean()
 })
 
@@ -25,7 +25,7 @@ export default async (req: express.Request, res: express.Response) => {
     const valid = validate(SCHEMA, req.body || {})
 
     if (valid.error) {
-        error(res, 400, valid.data)
+        error(res, 400, filterErrors(valid.data))
         return
     }
 

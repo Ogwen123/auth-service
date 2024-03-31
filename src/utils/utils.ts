@@ -20,3 +20,13 @@ export const validate = (schema: Joi.Schema, data) => {
         data: validate.value
     }
 }
+
+export const filterErrors = (errors) => {
+    return errors.map((error) => {
+        if (error.startsWith('"password"')) {
+            return "Password must have a uppercase, lowercase and a number."
+        } else {
+            return error
+        }
+    })
+}

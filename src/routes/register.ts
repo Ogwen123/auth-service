@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid"
 
 import { prisma } from "../utils/db";
 import { hashPassword } from "../utils/password";
-import { now, validate } from "../utils/utils";
+import { filterErrors, now, validate } from "../utils/utils";
 import { error, success } from "../utils/api";
 
 const SCHEMA = Joi.object({
@@ -18,15 +18,7 @@ export default async (req: express.Request, res: express.Response) => {
     const valid = validate(SCHEMA, req.body || {})
 
     if (valid.error) {
-        valid.data = valid.data.map((error) => {
-            if (error.startsWith('"password"')) {
-                return "Password must have a uppercase, lowercase and a number."
-            } else {
-                return error
-            }
-        })
-
-        error(res, 400, valid.data)
+        error(res, 400, filterErrors(valid.data))
         return
     }
 
