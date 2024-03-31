@@ -11,7 +11,7 @@ import { LoginResponse } from "../global/types";
 
 const SCHEMA = Joi.object({
     identifier: Joi.string().required(),
-    password: Joi.string().required().regex(new RegExp(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}/g)),
+    password: Joi.string().required().regex(new RegExp(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}/)),
     sendData: Joi.boolean()
 })
 
