@@ -1,11 +1,6 @@
 import express from "express"
 import dotenv from "dotenv"
-import { v4 as uuidv4 } from "uuid"
 import bodyParser from "body-parser"
-
-import { prisma } from "./utils/db"
-import { hashPassword } from "./utils/password"
-import { now } from "./utils/utils"
 
 import register from "./routes/register"
 import login from "./routes/login"
@@ -25,7 +20,7 @@ app.use(bodyParser.json())
 
 app.use('/*', function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Content-Type");
+    res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
     res.header("Access-Control-Allow-Methods", "GET,HEAD,POST,PATCH,DELETE,OPTIONS")
     res.header("Access-Control-Max-Age", "86400")
     next();
