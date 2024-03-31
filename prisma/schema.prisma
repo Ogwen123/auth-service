@@ -10,11 +10,11 @@ datasource db {
 
 model users {
     id            String   @id(map: "users_pk") @db.VarChar
-    username      String?  @db.VarChar
-    name          String?  @db.VarChar
-    email         String?  @db.VarChar
-    password_hash String?  @db.VarChar
-    perm_flag     Int?
+    username      String   @db.VarChar
+    name          String   @db.VarChar
+    email         String   @db.VarChar
+    password_hash String   @db.VarChar
+    perm_flag     Int
     created_at    BigInt?
     updated_at    BigInt?
     tables        tables[]
