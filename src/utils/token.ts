@@ -7,7 +7,7 @@ export const getPayload = (token: string): TokenPayload | false => {
 
         return (decoded as TokenPayload)
     } catch (e) {
-        console.error(e)
+        console.log(e)
         return false
     }
 }

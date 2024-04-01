@@ -26,6 +26,7 @@ export default async (req: express.Request, res: express.Response, type: "POST" 
         }
     }
     else {
+        console.log(req.body)
         const valid = validate(POST_SCHEMA, req.body || {})
 
         if (valid.error) {
@@ -36,7 +37,7 @@ export default async (req: express.Request, res: express.Response, type: "POST" 
         token = valid.data.token
     }
 
-    console.log(token)
+    console.log(type + " : " + token)
 
     let validToken = getPayload(token)
 
