@@ -36,6 +36,8 @@ export default async (req: express.Request, res: express.Response, type: "POST" 
         token = valid.data.token
     }
 
+    console.log(token)
+
     let validToken = getPayload(token)
 
     if (validToken === false) {
