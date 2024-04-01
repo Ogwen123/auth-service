@@ -8,19 +8,32 @@ import { getPayload } from "../utils/token";
 import { TokenPayload } from "../global/types";
 import { flagBFToPerms } from "../utils/flags";
 
-export default async (req: express.Request, res: express.Response) => {
+const POST_SCHEMA = Joi.object({
+    token: Joi.string().required()
+})
+
+export default async (req: express.Request, res: express.Response, type: "POST" | "GET") => {
     // make sure the body of the request is valid
 
-    const token = req.get("Authorization")?.split(" ")[1]
+    let token;
 
-    console.log(req.headers)
-    console.log(req.get("Authorization"))
-    console.log(req.get("Authorization")?.split(" "))
-    console.log(req.get("Authorization")?.split(" ")[1])
+    if (type === "GET") {
+        token = req.get("Authorization")?.split(" ")[1]
 
-    if (token === undefined) {
-        error(res, 401, "Invalid token")
-        return
+        if (token === undefined) {
+            error(res, 401, "Invalid token")
+            return
+        }
+    }
+    else {
+        const valid = validate(POST_SCHEMA, req.body || {})
+
+        if (valid.error) {
+            error(res, 400, valid.data)
+            return
+        }
+
+        token = valid.data.token
     }
 
     let validToken = getPayload(token)
