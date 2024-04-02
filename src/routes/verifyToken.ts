@@ -17,25 +17,25 @@ export default async (req: express.Request, res: express.Response, type: "POST" 
 
     let token;
 
-    if (type === "GET") {
-        token = req.get("Authorization")?.split(" ")[1]
+    //if (type === "GET") {
+    token = req.get("Authorization")?.split(" ")[1]
 
-        if (token === undefined) {
-            error(res, 401, "Invalid token")
-            return
-        }
+    if (token === undefined) {
+        error(res, 401, "Invalid token")
+        return
     }
-    else {
-        console.log(req.body)
-        const valid = validate(POST_SCHEMA, req.body || {})
+    //}
+    //else {
+    //    console.log(req.body)
+    //    const valid = validate(POST_SCHEMA, req.body || {})
 
-        if (valid.error) {
-            error(res, 400, valid.data)
-            return
-        }
+    //    if (valid.error) {
+    //        error(res, 400, valid.data)
+    //        return
+    //    }
 
-        token = valid.data.token
-    }
+    //    token = valid.data.token
+    //}
 
     console.log(type + " : " + token)
 
