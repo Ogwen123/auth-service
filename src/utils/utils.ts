@@ -4,6 +4,10 @@ export const now = (): number => {
     return Date.now()
 }
 
+export const iso = (): string => {
+    return (new Date()).toISOString()
+}
+
 export const validate = (schema: Joi.Schema, data) => {
     const validate = schema.validate(data, { abortEarly: false })
 

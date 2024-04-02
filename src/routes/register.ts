@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid"
 
 import { prisma } from "../utils/db";
 import { hashPassword } from "../utils/password";
-import { filterErrors, now, validate } from "../utils/utils";
+import { filterErrors, iso, now, validate } from "../utils/utils";
 import { error, success } from "../utils/api";
 
 const SCHEMA = Joi.object({
@@ -77,8 +77,8 @@ export default async (req: express.Request, res: express.Response) => {
             email: data.email,
             password_hash: hashData,
             perm_flag: 1,
-            created_at: now(),
-            updated_at: now()
+            created_at: iso(),
+            updated_at: iso()
         }
     })
 
