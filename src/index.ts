@@ -16,11 +16,7 @@ const app = express()
 const port = 3000
 
 //app.use(express.json())
-app.use(bodyParser.json({
-    type(req) {
-        return true
-    },
-}))
+app.use(bodyParser.json())
 
 app.use('/*', function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
