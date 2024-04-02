@@ -48,10 +48,6 @@ app.get("/api/verify-token", (req, res) => {
     verifyToken(req, res, "GET")
 })
 
-app.post("/api/verify-token", (req, res) => {
-    verifyToken(req, res, "POST")
-})
-
 app.listen(port, () => {
     console.log(`auth service loaded, ${port}`)
 })

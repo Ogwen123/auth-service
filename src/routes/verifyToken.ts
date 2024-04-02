@@ -17,27 +17,14 @@ export default async (req: express.Request, res: express.Response, type: "POST" 
 
     let token;
 
-    //if (type === "GET") {
     token = req.get("Authorization")?.split(" ")[1]
 
     if (token === undefined) {
         error(res, 401, "Invalid token")
         return
     }
-    //}
-    //else {
-    //    console.log(req.body)
-    //    const valid = validate(POST_SCHEMA, req.body || {})
 
-    //    if (valid.error) {
-    //        error(res, 400, valid.data)
-    //        return
-    //    }
-
-    //    token = valid.data.token
-    //}
-
-    console.log(type + " : " + token)
+    console.log((new Date()).toISOString() + " : " + type + " : " + token)
 
     let validToken = getPayload(token)
 
@@ -75,7 +62,7 @@ export default async (req: express.Request, res: express.Response, type: "POST" 
         return
     }
 
-    const userPerms = flagBFToPerms(user.perm_flag)
+    const userPerms = flagBFToPerms(user.perm_flag!)
 
     success(
         res,
