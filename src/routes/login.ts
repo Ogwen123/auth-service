@@ -12,12 +12,15 @@ import { LoginResponse } from "../global/types";
 const SCHEMA = Joi.object({
     identifier: Joi.string().required(),
     password: Joi.string().required().regex(new RegExp(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}/)),
-    sendData: Joi.boolean()
+    sendData: Joi.boolean(),
+    min_flag: Joi.number()
 })
 
 const checkEmailSchema = Joi.object({
     identifier: Joi.string().required().email(),
-    password: Joi.string().required()
+    password: Joi.string().required(),
+    sendData: Joi.boolean(),
+    min_flag: Joi.number()
 })
 
 export default async (req: express.Request, res: express.Response) => {
@@ -25,7 +28,7 @@ export default async (req: express.Request, res: express.Response) => {
     const valid = validate(SCHEMA, req.body || {})
 
     if (valid.error) {
-        error(res, 400, filterErrors(valid.data))
+        error(res, 400, filterErrors(valid.data, "login"))
         return
     }
 
@@ -59,10 +62,18 @@ export default async (req: express.Request, res: express.Response) => {
         return
     }
 
-    const perms = flagBFToPerms(user.perm_flag)
+    if (!data.min_flag) {
+        console.log("no min flag")
+        data.min_flag = 1
+    }
 
-    if (!perms.includes("ACTIVE")) {
-        error(res, 401, "Your account is disabled.")
+    const perms = flagBFToPerms(user.perm_flag!)
+
+    console.log((data.min_flag & user.perm_flag!))
+    console.log((data.min_flag & user.perm_flag!) === data.min_flag)
+
+    if ((data.min_flag & user.perm_flag!) !== data.min_flag) {
+        error(res, 401, data.min_flag === 1 ? "Your account is disabled." : "You do not have the required permissions to access this site.")
         return
     }
 
@@ -83,15 +94,15 @@ export default async (req: express.Request, res: express.Response) => {
     if (data.sendData !== undefined && data.sendData === true) {
         resBody = {
             ...resBody,
-            username: user.username,
+            username: user.username!,
             permissions: perms,
-            name: user.name
+            name: user.name!
         }
     }
 
     success(
         res,
         resBody,
-        "Successfully loggin in."
+        "Successfully logged in."
     )
 }

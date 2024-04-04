@@ -18,7 +18,7 @@ export default async (req: express.Request, res: express.Response) => {
     const valid = validate(SCHEMA, req.body || {})
 
     if (valid.error) {
-        error(res, 400, filterErrors(valid.data))
+        error(res, 400, filterErrors(valid.data, "register"))
         return
     }
 
