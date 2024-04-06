@@ -6,13 +6,9 @@ import { now, validate } from "../utils/utils";
 import { error, success } from "../utils/api";
 import { getPayload } from "../utils/token";
 import { TokenPayload } from "../global/types";
-import { flagBFToPerms } from "../utils/flags";
+import { flagBFToPerms, permissions } from "../utils/flags";
 
-const POST_SCHEMA = Joi.object({
-    token: Joi.string().required()
-})
-
-export default async (req: express.Request, res: express.Response, type: "POST" | "GET") => {
+export default async (req: express.Request, res: express.Response) => {
     // make sure the body of the request is valid
 
     let token;
@@ -60,14 +56,9 @@ export default async (req: express.Request, res: express.Response, type: "POST" 
         return
     }
 
-    const userPerms = flagBFToPerms(user.perm_flag!)
-
     success(
         res,
-        {
-            id: validToken.id,
-            perms: userPerms
-        },
-        "Successfully validated token."
+        permissions,
+        "Successfully fetched permissions."
     )
 }

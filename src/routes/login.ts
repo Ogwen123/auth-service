@@ -63,14 +63,10 @@ export default async (req: express.Request, res: express.Response) => {
     }
 
     if (!data.min_flag) {
-        console.log("no min flag")
         data.min_flag = 1
     }
 
     const perms = flagBFToPerms(user.perm_flag!)
-
-    console.log((data.min_flag & user.perm_flag!))
-    console.log((data.min_flag & user.perm_flag!) === data.min_flag)
 
     if ((data.min_flag & user.perm_flag!) !== data.min_flag) {
         error(res, 401, data.min_flag === 1 ? "Your account is disabled." : "You do not have the required permissions to access this site.")

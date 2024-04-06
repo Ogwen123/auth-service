@@ -6,6 +6,7 @@ import register from "./routes/register"
 import login from "./routes/login"
 import logout from "./routes/logout"
 import verifyToken from "./routes/verifyToken"
+import permissions from "./routes/permissions"
 
 //@ts-ignore
 BigInt.prototype.toJSON = function () { return this.toString() }
@@ -46,6 +47,10 @@ app.post("/api/logout", (req, res) => {
 
 app.get("/api/verify-token", (req, res) => {
     verifyToken(req, res, "GET")
+})
+
+app.get("/api/permissions", (req, res) => {
+    permissions(req, res)
 })
 
 app.listen(port, () => {

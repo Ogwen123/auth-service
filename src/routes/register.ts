@@ -68,7 +68,6 @@ export default async (req: express.Request, res: express.Response) => {
         })).length === 0
     }
 
-    console.log(String(now()))
     await prisma.users.create({
         data: {
             id,
