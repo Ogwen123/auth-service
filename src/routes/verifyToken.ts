@@ -62,6 +62,11 @@ export default async (req: express.Request, res: express.Response, type: "POST" 
 
     const userPerms = flagBFToPerms(user.perm_flag!)
 
+    if (!userPerms.includes("ACTIVE")) {
+        error(res, 401, "This user is disabled.")
+        return
+    }
+
     success(
         res,
         {
