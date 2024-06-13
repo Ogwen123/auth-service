@@ -2,18 +2,25 @@ import Joi from "joi";
 import express from "express";
 
 import { prisma } from "../utils/db";
-import { now, validate } from "../utils/utils";
+import { filterErrors, now, validate } from "../utils/utils";
 import { error, success } from "../utils/api";
 import { getPayload } from "../utils/token";
 import { TokenPayload } from "../global/types";
-import { flagBFToPerms } from "../utils/flags";
+import { flagBFToPerms, services } from "../utils/flags";
 
-const POST_SCHEMA = Joi.object({
-    token: Joi.string().required()
+const SCHEMA = Joi.object({
+    service: Joi.string().valid(...[...Object.keys(services), "ADMIN"]).required(),
 })
 
-export default async (req: express.Request, res: express.Response, type: "POST" | "GET") => {
+export default async (req: express.Request, res: express.Response) => {
     // make sure the body of the request is valid
+    const valid = validate(SCHEMA, req.body || {})
+    if (valid.error) {
+        error(res, 400, valid.data)
+        return
+    }
+
+    let data = valid.data
 
     let token;
 
@@ -65,6 +72,14 @@ export default async (req: express.Request, res: express.Response, type: "POST" 
     if (!userPerms.includes("ACTIVE")) {
         error(res, 401, "This user is disabled.")
         return
+    }
+
+    if (data.services !== "ADMIN") {
+        let flag = services[data.service]
+        if ((flag & user.services_flag) === flag) {
+            error(res, 401, "You are not authorized to access this specific service.")
+            return
+        }
     }
 
     success(

@@ -5,6 +5,10 @@ export const permissions = {
     2: "ADMIN"
 }
 
+export const services = {
+    "TABLE": 1
+}
+
 export const flagBFToPerms = (bf: number) => {
     let perms: Perm[] = []
 

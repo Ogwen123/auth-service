@@ -6,13 +6,14 @@ import { prisma } from "../utils/db";
 import { checkPassword, hashPassword } from "../utils/password";
 import { filterErrors, now, validate } from "../utils/utils";
 import { error, success } from "../utils/api";
-import { flagBFToPerms } from "../utils/flags";
+import { flagBFToPerms, services } from "../utils/flags";
 import { LoginResponse } from "../global/types";
 
 const SCHEMA = Joi.object({
     identifier: Joi.string().required(),
     password: Joi.string().required().regex(new RegExp(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}/)),
     sendData: Joi.boolean(),
+    service: Joi.string().valid(...[...Object.keys(services), "ADMIN"]).required(),
     min_flag: Joi.number()
 })
 
@@ -20,6 +21,7 @@ const checkEmailSchema = Joi.object({
     identifier: Joi.string().required().email(),
     password: Joi.string().required(),
     sendData: Joi.boolean(),
+    service: Joi.string().valid(...[...Object.keys(services), "ADMIN"]).required(),
     min_flag: Joi.number()
 })
 
@@ -81,6 +83,14 @@ export default async (req: express.Request, res: express.Response) => {
         }
     })).length > 0) {
         token = jwt.sign({ id: user.id, expires: now() + 60 * 60 * 24 * 7 }, process.env.JWT_SECRET)
+    }
+
+    if (data.services !== "ADMIN") {
+        let flag = services[data.service]
+        if ((flag & user.services_flag) === flag) {
+            error(res, 401, "You are not authorized to access this specific service.")
+            return
+        }
     }
 
     let resBody: LoginResponse = {

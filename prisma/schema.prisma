@@ -16,6 +16,7 @@ model users {
   perm_flag     Int?
   created_at    String?    @db.VarChar
   updated_at    String?    @db.VarChar
+  services_flag Int        @default(0)
   services      services[]
   tables        tables[]
 }

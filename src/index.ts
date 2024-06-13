@@ -45,8 +45,8 @@ app.post("/api/logout", (req, res) => {
     logout(req, res)
 })
 
-app.get("/api/verify-token", (req, res) => {
-    verifyToken(req, res, "GET")
+app.post("/api/verify-token", (req, res) => {
+    verifyToken(req, res)
 })
 
 app.get("/api/permissions", (req, res) => {
