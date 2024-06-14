@@ -74,7 +74,7 @@ export default async (req: express.Request, res: express.Response) => {
         return
     }
 
-    if (data.services !== "ADMIN") {
+    if (data.service !== "ADMIN") {
         let flag = services[data.service]
         if ((flag & user.services_flag) === flag) {
             error(res, 401, "You are not authorized to access this specific service.")

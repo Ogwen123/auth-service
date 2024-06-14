@@ -4,10 +4,11 @@ import jwt from "jsonwebtoken"
 
 import { prisma } from "../utils/db";
 import { checkPassword, hashPassword } from "../utils/password";
-import { filterErrors, now, validate } from "../utils/utils";
+import { filterErrors, iso, now, validate } from "../utils/utils";
 import { error, success } from "../utils/api";
 import { flagBFToPerms, services } from "../utils/flags";
 import { LoginResponse } from "../global/types";
+import { v4 as uuidv4 } from "uuid"
 
 const SCHEMA = Joi.object({
     identifier: Joi.string().required(),
@@ -29,9 +30,11 @@ export default async (req: express.Request, res: express.Response) => {
     // make sure the body of the request is valid
     const valid = validate(SCHEMA, req.body || {})
 
+    let login_successful = { success: true, reason: "UNKNOWN" }
+
     if (valid.error) {
         error(res, 400, filterErrors(valid.data, "login"))
-        return
+        login_successful = { success: false, reason: "INVALID_BODY" }
     }
 
     let isEmail = true
@@ -51,7 +54,7 @@ export default async (req: express.Request, res: express.Response) => {
 
     if (userArr.length === 0 || userArr.length > 1) {
         error(res, 400, "Incorrect password or username.")
-        return
+        login_successful = { success: false, reason: "INCORRECT_IDENTIFIER" }
     }
 
     const user = userArr[0]
@@ -61,7 +64,7 @@ export default async (req: express.Request, res: express.Response) => {
 
     if (!correctPassword) {
         error(res, 401, "Incorrect password or username.")
-        return
+        login_successful = { success: false, reason: "INCORRECT_PASSWORD" }
     }
 
     if (!data.min_flag) {
@@ -72,7 +75,7 @@ export default async (req: express.Request, res: express.Response) => {
 
     if ((data.min_flag & user.perm_flag!) !== data.min_flag) {
         error(res, 401, data.min_flag === 1 ? "Your account is disabled." : "You do not have the required permissions to access this site.")
-        return
+        login_successful = { success: false, reason: data.min_flag === 1 ? "DISABLED_ACCOUNT" : "INSUFFICIENT_PERMISSIONS" }
     }
 
     let token = jwt.sign({ id: user.id, expires: now() + 60 * 60 * 24 * 7 }, process.env.JWT_SECRET)
@@ -85,11 +88,11 @@ export default async (req: express.Request, res: express.Response) => {
         token = jwt.sign({ id: user.id, expires: now() + 60 * 60 * 24 * 7 }, process.env.JWT_SECRET)
     }
 
-    if (data.services !== "ADMIN") {
+    if (data.service !== "ADMIN") {
         let flag = services[data.service]
         if ((flag & user.services_flag) === flag) {
             error(res, 401, "You are not authorized to access this specific service.")
-            return
+            login_successful = { success: false, reason: "INSUFFICIENT_SERVICE_PERMISSIONS" }
         }
     }
 
@@ -111,4 +114,28 @@ export default async (req: express.Request, res: express.Response) => {
         resBody,
         "Successfully logged in."
     )
+
+    // add login to database
+    // get a unique id - even though chance of getting a duplicate id is practically 0
+    let id = ""
+    let unique = false
+    while (!unique) {
+        id = uuidv4()
+        unique = (await prisma.users.findMany({
+            where: {
+                id
+            }
+        })).length === 0
+    }
+
+    await prisma.logins.create({
+        data: {
+            id,
+            user_id: user.id,
+            created_at: iso(),
+            generator: data.service,
+            success: login_successful.success,
+            reason: login_successful.success === true ? null : login_successful.reason || ""
+        }
+    })
 }
