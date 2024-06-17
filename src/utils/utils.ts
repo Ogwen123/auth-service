@@ -28,7 +28,7 @@ export const validate = (schema: Joi.Schema, data) => {
 export const filterErrors = (errors, route: "login" | "register") => {
     return errors.map((error) => {
         if (error.startsWith('"password"')) {
-            return route === "login" ? "Incorrect username or password." : "Password must have a uppercase, lowercase and a number."
+            return route === "login" ? "Invalid username or password." : "Password must have a uppercase, lowercase and a number."
         } else {
             return error
         }

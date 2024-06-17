@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from "uuid"
 
 const SCHEMA = Joi.object({
     identifier: Joi.string().required(),
-    password: Joi.string().required().regex(new RegExp(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}/)),
+    password: Joi.string().required(),
     sendData: Joi.boolean(),
     service: Joi.string().valid(...[...Object.keys(services), "ADMIN"]).required(),
     min_flag: Joi.number()
@@ -26,15 +26,44 @@ const checkEmailSchema = Joi.object({
     min_flag: Joi.number()
 })
 
+const logLogin = async (reason: any, data?: any, user?: any) => {
+    // ! IF YOU ADD MORE FAIL REASONS THEN UPDATE THE WEBSITE AND ADMIN SERVICE WITH THEM
+
+
+    // add login to database
+    // get a unique id - even though chance of getting a duplicate id is practically 0
+    let id = ""
+    let unique = false
+    while (!unique) {
+        id = uuidv4()
+        unique = (await prisma.users.findMany({
+            where: {
+                id
+            }
+        })).length === 0
+    }
+
+    await prisma.logins.create({
+        data: {
+            id,
+            user_id: user ? user.id : null,
+            created_at: iso(),
+            generator: data ? data.service : "UNKNOWN",
+            success: reason.success,
+            reason: reason.success === true ? null : reason.reason || ""
+        }
+    })
+}
+
 export default async (req: express.Request, res: express.Response) => {
     // make sure the body of the request is valid
     const valid = validate(SCHEMA, req.body || {})
 
-    let login_successful = { success: true, reason: "UNKNOWN" }
-
     if (valid.error) {
         error(res, 400, filterErrors(valid.data, "login"))
-        login_successful = { success: false, reason: "INVALID_BODY" }
+        console.log("HERE 1")
+        logLogin({ success: false, reason: "INVALID_BODY" }, null, null)
+        return
     }
 
     let isEmail = true
@@ -53,8 +82,9 @@ export default async (req: express.Request, res: express.Response) => {
     })
 
     if (userArr.length === 0 || userArr.length > 1) {
-        error(res, 400, "Incorrect password or username.")
-        login_successful = { success: false, reason: "INCORRECT_IDENTIFIER" }
+        error(res, 401, "Incorrect password or username.")
+        logLogin({ success: false, reason: "INCORRECT_IDENTIFIER" }, data, null)
+        return
     }
 
     const user = userArr[0]
@@ -64,7 +94,8 @@ export default async (req: express.Request, res: express.Response) => {
 
     if (!correctPassword) {
         error(res, 401, "Incorrect password or username.")
-        login_successful = { success: false, reason: "INCORRECT_PASSWORD" }
+        logLogin({ success: false, reason: "INCORRECT_PASSWORD" }, data, user)
+        return
     }
 
     if (!data.min_flag) {
@@ -75,7 +106,8 @@ export default async (req: express.Request, res: express.Response) => {
 
     if ((data.min_flag & user.perm_flag!) !== data.min_flag) {
         error(res, 401, data.min_flag === 1 ? "Your account is disabled." : "You do not have the required permissions to access this site.")
-        login_successful = { success: false, reason: data.min_flag === 1 ? "DISABLED_ACCOUNT" : "INSUFFICIENT_PERMISSIONS" }
+        logLogin({ success: false, reason: data.min_flag === 1 ? "DISABLED_ACCOUNT" : "INSUFFICIENT_PERMISSIONS" }, data, user)
+        return
     }
 
     let token = jwt.sign({ id: user.id, expires: now() + 60 * 60 * 24 * 7 }, process.env.JWT_SECRET)
@@ -92,7 +124,8 @@ export default async (req: express.Request, res: express.Response) => {
         let flag = services[data.service]
         if ((flag & user.services_flag) === flag) {
             error(res, 401, "You are not authorized to access this specific service.")
-            login_successful = { success: false, reason: "INSUFFICIENT_SERVICE_PERMISSIONS" }
+            logLogin({ success: false, reason: "INSUFFICIENT_SERVICE_PERMISSIONS" }, data, user)
+            return
         }
     }
 
@@ -114,28 +147,5 @@ export default async (req: express.Request, res: express.Response) => {
         resBody,
         "Successfully logged in."
     )
-
-    // add login to database
-    // get a unique id - even though chance of getting a duplicate id is practically 0
-    let id = ""
-    let unique = false
-    while (!unique) {
-        id = uuidv4()
-        unique = (await prisma.users.findMany({
-            where: {
-                id
-            }
-        })).length === 0
-    }
-
-    await prisma.logins.create({
-        data: {
-            id,
-            user_id: user.id,
-            created_at: iso(),
-            generator: data.service,
-            success: login_successful.success,
-            reason: login_successful.success === true ? null : login_successful.reason || ""
-        }
-    })
+    logLogin({ success: true, reason: "" }, data, user)
 }

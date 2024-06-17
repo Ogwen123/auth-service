@@ -60,11 +60,11 @@ model services {
 }
 
 model logins {
-  user_id    String  @db.VarChar
+  user_id    String? @db.VarChar
   created_at String  @db.VarChar
   generator  String  @db.VarChar
   id         String  @id(map: "logins_pk") @db.VarChar
   success    Boolean
   reason     String? @db.VarChar
-  users      users   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "logins_fk")
+  users      users?  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "logins_fk")
 }
