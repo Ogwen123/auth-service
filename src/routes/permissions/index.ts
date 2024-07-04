@@ -1,12 +1,12 @@
 import Joi from "joi";
 import express from "express";
 
-import { prisma } from "../utils/db";
-import { now, validate } from "../utils/utils";
-import { error, success } from "../utils/api";
-import { getPayload } from "../utils/token";
-import { TokenPayload } from "../global/types";
-import { flagBFToPerms, permissions } from "../utils/flags";
+import { prisma } from "../../utils/db";
+import { now, validate } from "../../utils/utils";
+import { error, success } from "../../utils/api";
+import { getPayload } from "../../utils/token";
+import { TokenPayload } from "../../global/types";
+import { flagBFToPerms, permissions } from "../../utils/flags";
 
 export default async (req: express.Request, res: express.Response) => {
     // make sure the body of the request is valid

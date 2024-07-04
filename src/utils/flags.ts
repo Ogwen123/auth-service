@@ -5,7 +5,7 @@ export const permissions = {
     2: "ADMIN"
 }
 
-export const services = {
+export const services = { // update the copy in
     "TABLE": 1
 }
 
