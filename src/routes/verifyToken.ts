@@ -9,7 +9,7 @@ import { TokenPayload } from "../global/types";
 import { flagBFToPerms, services } from "../utils/flags";
 
 const SCHEMA = Joi.object({
-    service: Joi.string().valid(...[...Object.keys(services), "ADMIN"]).required(),
+    service: Joi.string().valid(...[...Object.values(services), "ADMIN"]).required(),
 })
 
 export default async (req: express.Request, res: express.Response) => {
@@ -75,7 +75,8 @@ export default async (req: express.Request, res: express.Response) => {
     }
 
     if (data.service !== "ADMIN") {
-        let flag = services[data.service]
+        let flag = parseInt(Object.keys(services)[Object.values(services).indexOf(data.service)])
+        console.log("huh2: ", flag)
         if ((flag & user.services_flag) === flag) {
             error(res, 401, "You are not authorized to access this specific service.")
             return

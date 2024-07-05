@@ -5,8 +5,8 @@ export const permissions = {
     2: "ADMIN"
 }
 
-export const services = { // update the copy in
-    "TABLE": 1
+export const services = {
+    1: "TABLE"
 }
 
 export const flagBFToPerms = (bf: number) => {

@@ -14,7 +14,7 @@ const SCHEMA = Joi.object({
     identifier: Joi.string().required(),
     password: Joi.string().required(),
     sendData: Joi.boolean(),
-    service: Joi.string().valid(...[...Object.keys(services), "ADMIN"]).required(),
+    service: Joi.string().valid(...[...Object.values(services), "ADMIN"]).required(),
     min_flag: Joi.number()
 })
 
@@ -22,7 +22,7 @@ const checkEmailSchema = Joi.object({
     identifier: Joi.string().required().email(),
     password: Joi.string().required(),
     sendData: Joi.boolean(),
-    service: Joi.string().valid(...[...Object.keys(services), "ADMIN"]).required(),
+    service: Joi.string().valid(...[...Object.values(services), "ADMIN"]).required(),
     min_flag: Joi.number()
 })
 
@@ -61,7 +61,6 @@ export default async (req: express.Request, res: express.Response) => {
 
     if (valid.error) {
         error(res, 400, filterErrors(valid.data, "login"))
-        console.log("HERE 1")
         logLogin({ success: false, reason: "INVALID_BODY" }, null, null)
         return
     }
@@ -121,8 +120,8 @@ export default async (req: express.Request, res: express.Response) => {
     }
 
     if (data.service !== "ADMIN") {
-        let flag = services[data.service]
-        if ((flag & user.services_flag) === flag) {
+        let flag = parseInt(Object.keys(services)[Object.values(services).indexOf(data.service)])
+        if (((flag & user.services_flag) === flag) || flag === undefined) {
             error(res, 401, "You are not authorized to access this specific service.")
             logLogin({ success: false, reason: "INSUFFICIENT_SERVICE_PERMISSIONS" }, data, user)
             return
