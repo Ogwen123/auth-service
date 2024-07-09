@@ -9,13 +9,15 @@ export const services = {
     1: "TABLE"
 }
 
-export const flagBFToPerms = (bf: number) => {
+export const flagBFToPerms = (bf: number, use_services: boolean = false) => {
     let perms: Perm[] = []
 
-    for (let i of Object.keys(permissions)) {
+    const to_use = use_services ? services : permissions
+
+    for (let i of Object.keys(to_use)) {
         const j = parseInt(i)
         if ((j & bf) === j) {
-            perms.push(permissions[j])
+            perms.push(to_use[j])
         }
     }
 
