@@ -6,7 +6,8 @@ export const permissions = {
 }
 
 export const services = {
-    1: "TABLE"
+    1: "TABLE",
+    2: "TRACKER"
 }
 
 export const flagBFToPerms = (bf: number, use_services: boolean = false) => {
