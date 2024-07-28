@@ -76,7 +76,6 @@ export default async (req: express.Request, res: express.Response) => {
 
     if (data.service !== "ADMIN") {
         let flag = parseInt(Object.keys(services)[Object.values(services).indexOf(data.service)])
-        console.log("huh2: ", flag)
         if ((flag & user.services_flag) === flag) {
             error(res, 401, "You are not authorized to access this specific service.")
             return

@@ -6,7 +6,7 @@ import { now, validate } from "../../utils/utils";
 import { error, success } from "../../utils/api";
 import { getPayload } from "../../utils/token";
 import { TokenPayload } from "../../global/types";
-import { flagBFToPerms, services } from "../../utils/flags";
+import { services } from "../../utils/flags";
 
 export default async (req: express.Request, res: express.Response) => {
     // make sure the body of the request is valid
