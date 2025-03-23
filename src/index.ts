@@ -8,6 +8,7 @@ import logout from "./routes/logout"
 import verifyToken from "./routes/verifyToken"
 import permissions from "./routes/permissions"
 import servicesPermissions from "./routes/permissions/services"
+import userMe from "./routes/@me"
 
 //@ts-ignore
 BigInt.prototype.toJSON = function () { return this.toString() }
@@ -19,10 +20,11 @@ const port = 3000
 
 //app.use(express.json())
 app.use(bodyParser.json())
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/*', (req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
+    res.header("Access-Control-Allow-Headers", "Content-Type,Authorization,Content-Length");
     res.header("Access-Control-Allow-Methods", "GET,HEAD,POST,PATCH,DELETE,OPTIONS")
     res.header("Access-Control-Max-Age", "86400")
     next();
@@ -56,6 +58,10 @@ app.get("/api/permissions", (req, res) => {
 
 app.get("/api/permissions/services", (req, res) => {
     servicesPermissions(req, res)
+})
+
+app.get("/api/@me", (req, res) => {
+    userMe(req, res)
 })
 
 app.listen(port, () => {
