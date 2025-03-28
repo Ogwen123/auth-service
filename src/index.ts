@@ -9,6 +9,7 @@ import verifyToken from "./routes/verifyToken"
 import permissions from "./routes/permissions"
 import servicesPermissions from "./routes/permissions/services"
 import userMe from "./routes/@me"
+import userData from "./routes/user/get"
 
 //@ts-ignore
 BigInt.prototype.toJSON = function () { return this.toString() }
@@ -62,6 +63,10 @@ app.get("/api/permissions/services", (req, res) => {
 
 app.get("/api/@me", (req, res) => {
     userMe(req, res)
+})
+
+app.get("/api/users/:id", (req, res) => {
+    userData(req, res)
 })
 
 app.listen(port, () => {

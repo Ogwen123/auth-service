@@ -135,6 +135,7 @@ export default async (req: express.Request, res: express.Response) => {
     if (data.sendData !== undefined && data.sendData === true) {
         resBody = {
             ...resBody,
+            id: user.id!,
             username: user.username!,
             permissions: perms,
             name: user.name!

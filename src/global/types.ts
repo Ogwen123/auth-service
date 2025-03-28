@@ -7,6 +7,7 @@ export type TokenPayload = {
 
 export type LoginResponse = {
     token: string,
+    id?: string,
     username?: string,
     permissions?: Perm[],
     name?: string
